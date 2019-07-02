@@ -17,6 +17,8 @@ import 'style_sheet.dart';
 /// Used by [MarkdownWidget.onTapLink].
 typedef void MarkdownTapLinkCallback(String href);
 
+typedef Widget MarkdownNetworkImageBuilder(String uri, {double width, double height});
+
 /// Creates a format [TextSpan] given a string.
 ///
 /// Used by [MarkdownWidget] to highlight the contents of `pre` elements.
@@ -46,6 +48,7 @@ abstract class MarkdownWidget extends StatefulWidget {
     this.syntaxHighlighter,
     this.onTapLink,
     this.imageDirectory,
+    this.networkImageBuilder
   }) : assert(data != null),
        super(key: key);
 
@@ -67,6 +70,8 @@ abstract class MarkdownWidget extends StatefulWidget {
 
   /// The base directory holding images referenced by Img tags with local file paths.
   final Directory imageDirectory;
+
+  final MarkdownNetworkImageBuilder networkImageBuilder;
 
   /// Subclasses should override this function to display the given children,
   /// which are the parsed representation of [data].
@@ -113,6 +118,7 @@ class _MarkdownWidgetState extends State<MarkdownWidget> implements MarkdownBuil
       delegate: this,
       styleSheet: styleSheet,
       imageDirectory: widget.imageDirectory,
+      networkImageBuilder: widget.networkImageBuilder
     );
     _children = builder.build(document.parseLines(lines));
   }
@@ -166,6 +172,7 @@ class MarkdownBody extends MarkdownWidget {
     SyntaxHighlighter syntaxHighlighter,
     MarkdownTapLinkCallback onTapLink,
     Directory imageDirectory,
+    MarkdownNetworkImageBuilder networkImageBuilder
   }) : super(
     key: key,
     data: data,
@@ -173,6 +180,7 @@ class MarkdownBody extends MarkdownWidget {
     syntaxHighlighter: syntaxHighlighter,
     onTapLink: onTapLink,
     imageDirectory: imageDirectory,
+    networkImageBuilder: networkImageBuilder
   );
 
   @override
@@ -204,6 +212,7 @@ class Markdown extends MarkdownWidget {
     SyntaxHighlighter syntaxHighlighter,
     MarkdownTapLinkCallback onTapLink,
     Directory imageDirectory,
+    MarkdownNetworkImageBuilder networkImageBuilder,
     this.padding: const EdgeInsets.all(16.0),
   }) : super(
     key: key,
@@ -212,6 +221,7 @@ class Markdown extends MarkdownWidget {
     syntaxHighlighter: syntaxHighlighter,
     onTapLink: onTapLink,
     imageDirectory: imageDirectory,
+    networkImageBuilder: networkImageBuilder
   );
 
   /// The amount of space by which to inset the children.
